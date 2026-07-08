@@ -3,22 +3,14 @@ FROM maven:3.9.9-eclipse-temurin-21 AS builder
 
 WORKDIR /app
 
-# Copy Maven wrapper and pom first
-COPY .mvn .mvn
-COPY mvnw .
-COPY mvnw.cmd .
-COPY pom.xml .
-
-RUN chmod +x mvnw
-
-# Download dependencies
-RUN ./mvnw dependency:go-offline
-
-# Copy the rest of the project
+# Copy the project
 COPY . .
 
+# Download dependencies
+RUN mvn dependency:go-offline
+
 # Build the application
-RUN ./mvnw clean package -DskipTests
+RUN mvn clean package -DskipTests
 
 # ---------- Runtime Stage ----------
 FROM eclipse-temurin:21-jre
